@@ -15,7 +15,7 @@ class MoviesController < ApplicationController
               @movies = Movie.order(:title)
               @hilite_title = "hilite"
             elsif params[:sort] == 'release'
-              @movies = Movie.order(:release_date).reverse!
+              @movies = Movie.order(:release_date)
               @hilite_release = "hilite"   
     end    
   end
