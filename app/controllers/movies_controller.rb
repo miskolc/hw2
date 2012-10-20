@@ -10,24 +10,39 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.ratings  #['G','PG','PG-13','R']
 
     if params[:ratings].nil? 
-            @ratings = @all_ratings
+            if session[:ratings].nil?
+                    @ratings = @all_ratings 
+                else
+                    @ratings = session[:ratings].keys
+            end        
         else
             @ratings = params[:ratings].keys
     end   
-
     @checked_ratings = Hash[@ratings.map {|k| [k,1]}]
+    session[:ratings]=@checked_ratings
 
     @hilite_title   = "" 
     @hilite_release = ""
-    if params[:sort].nil?
-        @movies = Movie.where(:rating => @ratings)
+
+    if params[:sort].nil?    # puteam zice si && params[:ratings].nil?
+          if session[:sort].nil?
+                  @movies = Movie.where(rating: @ratings)
+              else
+                  @movies = Movie.where(rating: @ratings).order(session[:sort]) 
+                  redirect_to movies_path( sort: session[:sort], ratings: session[:ratings])    
+              end         
       elsif params[:sort] == 'title'
-              @movies = Movie.where(rating: @ratings).order(:title)
-              @hilite_title = "hilite"
+                @movies = Movie.where(rating: @ratings).order(:title)
+                @hilite_title = "hilite"
+                session[:sort] = 'title'
             elsif params[:sort] == 'release'
-              @movies = Movie.where(rating: @ratings).order(:release_date)
-              @hilite_release = "hilite"   
-    end    
+                @movies = Movie.where(rating: @ratings).order(:release_date)
+                @hilite_release = "hilite"
+                session[:sort] = 'release'  
+    end 
+
+    
+
   end
 
   def new
