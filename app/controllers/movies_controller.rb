@@ -15,6 +15,8 @@ class MoviesController < ApplicationController
             @ratings = params[:ratings].keys
     end   
 
+    @checked_ratings = Hash[@ratings.map {|k| [k,1]}]
+
     @hilite_title   = "" 
     @hilite_release = ""
     if params[:sort].nil?
