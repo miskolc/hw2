@@ -24,11 +24,14 @@ class MoviesController < ApplicationController
     @hilite_title   = "" 
     @hilite_release = ""
 
-    if params[:sort].nil?    # puteam zice si && params[:ratings].nil?
-          if session[:sort].nil?
-                  @movies = Movie.where(rating: @ratings)
+    if params[:sort].nil? && params[:ratings].nil?    # daca nu pun asta intra in infinite loop
+          if session[:sort].nil?                      # pentru ratinguri nu intreb PENTRU CA SUNT INTOTDEAUNA
+                  #@movies = Movie.where(rating: @ratings)
+                  flash.keep
+                  redirect_to movies_path( ratings: session[:ratings])
               else
-                  @movies = Movie.where(rating: @ratings).order(session[:sort]) 
+                  #@movies = Movie.where(rating: @ratings).order(session[:sort]) 
+                  flash.keep
                   redirect_to movies_path( sort: session[:sort], ratings: session[:ratings])    
               end         
       elsif params[:sort] == 'title'
@@ -36,9 +39,11 @@ class MoviesController < ApplicationController
                 @hilite_title = "hilite"
                 session[:sort] = 'title'
             elsif params[:sort] == 'release'
-                @movies = Movie.where(rating: @ratings).order(:release_date)
-                @hilite_release = "hilite"
-                session[:sort] = 'release'  
+                      @movies = Movie.where(rating: @ratings).order(:release_date)
+                      @hilite_release = "hilite"
+                      session[:sort] = 'release' 
+                  else 
+                      @movies = Movie.where(rating: @ratings)     
     end 
 
     
